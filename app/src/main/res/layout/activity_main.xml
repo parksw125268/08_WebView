@@ -40,6 +40,7 @@
             android:layout_height="0dp"/>
         <EditText
             android:id="@+id/addressBar"
+            android:imeOptions="actionDone"
             android:layout_width="0dp"
             android:inputType="textUri"
             android:layout_height="wrap_content"
