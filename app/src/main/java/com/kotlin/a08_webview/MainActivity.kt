@@ -8,6 +8,7 @@ import android.view.KeyEvent
 import android.view.KeyEvent.KEYCODE_ENTER
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.webkit.URLUtil
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -74,7 +75,12 @@ class MainActivity : AppCompatActivity() {
         //반환 : true : 이벤트 다썼다. false : 아직 다 안썼고 다른데서도 써야되니 남겨놔라
         addressBar.setOnEditorActionListener { v, actionId, event ->
             if(actionId == EditorInfo.IME_ACTION_DONE){
-                webView.loadUrl(v.text.toString())
+                val loadingUrl = v.text.toString()
+                if(URLUtil.isNetworkUrl(loadingUrl)) {//http of https 로 시작하는지 확인.
+                    webView.loadUrl(loadingUrl)
+                }else{
+                    webView.loadUrl("http://${loadingUrl}")//https로 시작하는 주소는 http로 해도 자동으로 바까준다.
+                }
             }
             return@setOnEditorActionListener false //키보드 닫는 처리도 해야되므로
         }
@@ -100,6 +106,10 @@ class MainActivity : AppCompatActivity() {
             super.onPageFinished(view, url)
             refreshLayout.isRefreshing = false
             progressBar.hide()
+            goBackButton.isEnabled = webView.canGoBack()
+            goForwardButton.isEnabled = webView.canGoForward()
+            addressBar.setText(url)
+
         }
     }
 
